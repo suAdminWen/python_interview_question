@@ -1445,6 +1445,11 @@ def multipliers():
 
 lambda函数是匿名函数，使用lambda函数能创建小型匿名函数，这种函数得名于省略了用def声明函数的标准步骤
 
+```python
+s = lambda a, b: a + b
+s(1, 2)
+```
+
 
 ##  设计模式
 ### 79.对设计模式的理解，简述你了解的设计模式？
@@ -1452,16 +1457,44 @@ lambda函数是匿名函数，使用lambda函数能创建小型匿名函数，�
 常见的是工厂模式和单例模式
 
 ### 80.请手写一个单例
+
+装饰器方式实现
+
 ```python
-#python2
-class A(object):
-    __instance = None
-    def __new__(cls,*args,**kwargs):
-        if cls.__instance is None:
-            cls.__instance = objecet.__new__(cls)
-            return cls.__instance
-        else:
-            return cls.__instance
+
+# 装饰器方式实现
+def singleton(cls):
+    instances = {}
+    def wapper(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return wapper
+
+
+@singleton
+class A:
+    pass
+ 
+a = A()
+b = A()
+print(a is b)
+
+```
+
+继承方式实现
+
+```python
+class Singleton:
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            cls._instance = super(Singleton, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
+
+class A(Singleton):
+    pass
+
 ```
 ### 81.单例模式的应用场景有那些？
 单例模式应用的场景一般发现在以下条件下：
@@ -1738,14 +1771,15 @@ if __name__ == "__main__":
     print("(%s)End"%os.getpid())
 ```
 ### 107.谈谈你对多进程，多线程，以及协程的理解，项目是否用？
-这个问题被问的概念相当之大，
+这个问题被问的概率相当之大。
+
 进程：一个运行的程序（代码）就是一个进程，没有运行的代码叫程序，进程是系统资源分配的最小单位，进程拥有自己独立的内存空间，所有进程间数据不共享，开销大。
 
 线程: cpu调度执行的最小单位，也叫执行路径，不能独立存在，依赖进程存在，一个进程至少有一个线程，叫主线程，而多个线程共享内存（数据共享，共享全局变量),从而极大地提高了程序的运行效率。
 
 协程: 是一种用户态的轻量级线程，协程的调度完全由用户控制。协程拥有自己的寄存器上下文和栈。协程调度时，将寄存器上下文和栈保存到其他地方，在切回来的时候，恢复先前保存的寄存器上下文和栈，直接操中栈则基本没有内核切换的开销，可以不加锁的访问全局变量，所以上下文的切换非常快。
 
-### 108.Python异常使用场景有那些？
+### 108.Python异步使用场景有那些？
 异步的使用场景:
 
 1、 不涉及共享资源，获对共享资源只读，即非互斥操作
